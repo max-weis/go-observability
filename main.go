@@ -10,7 +10,12 @@ import (
 )
 
 func main() {
-	logger, _ := zap.NewProduction()
+	cfg := zap.NewProductionConfig()
+	cfg.OutputPaths = []string{
+		"./log/monitoring.log",
+		"stdout",
+	}
+	logger, _ := cfg.Build()
 	defer logger.Sync()
 
 	config := config.NewConfig(*logger)

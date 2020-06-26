@@ -3,6 +3,7 @@ package server
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"github.com/go-chi/chi"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
@@ -56,9 +57,7 @@ func (h *helloHandler) sayMessage(w http.ResponseWriter, r *http.Request) {
 	ctx := context.Background()
 
 	msg := chi.URLParam(r, "message")
-	h.logger.Info("say message",
-		zap.String("msg", msg),
-	)
+	h.logger.Info(fmt.Sprintf("say message: %s", msg))
 
 	message, err := h.s.SayMessage(msg)
 	if err != nil {

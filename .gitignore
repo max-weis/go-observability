@@ -3,3 +3,5 @@
 
 monitoring.*
 monitoring
+
+log/*.log
