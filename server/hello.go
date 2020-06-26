@@ -4,9 +4,23 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/go-chi/chi"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promauto"
 	"go.uber.org/zap"
 	"monitoring/hello"
 	"net/http"
+)
+
+var (
+	helloCounter = promauto.NewCounter(prometheus.CounterOpts{
+		Name: "say_hello_total",
+		Help: "The total number of said hellos",
+	})
+
+	messageCounter = promauto.NewCounter(prometheus.CounterOpts{
+		Name: "say_message_total",
+		Help: "The total number of said messages",
+	})
 )
 
 type helloHandler struct {
@@ -24,6 +38,7 @@ func (h *helloHandler) router() chi.Router {
 }
 
 func (h *helloHandler) sayHello(w http.ResponseWriter, r *http.Request) {
+	helloCounter.Inc()
 	h.logger.Info("say hello")
 	ctx := context.Background()
 
@@ -37,6 +52,7 @@ func (h *helloHandler) sayHello(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *helloHandler) sayMessage(w http.ResponseWriter, r *http.Request) {
+	messageCounter.Inc()
 	ctx := context.Background()
 
 	msg := chi.URLParam(r, "message")

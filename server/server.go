@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/go-chi/chi"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"go.uber.org/zap"
 	"monitoring/hello"
 	"net/http"
@@ -26,6 +27,8 @@ func New(hs hello.Service, logger zap.Logger) *Server {
 		h := helloHandler{s.Hello, logger}
 		r.Mount("/v1", h.router())
 	})
+
+	r.Method("GET", "/metrics", promhttp.Handler())
 	s.router = r
 
 	return s
