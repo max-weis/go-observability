@@ -17,5 +17,5 @@ RUN CGO_ENABLED=0 GOOS=linux go build -o main
 FROM scratch as final
 COPY --from=build go/app/main /app/
 WORKDIR /app
-EXPOSE 8080
+
 ENTRYPOINT [ "./main" ]

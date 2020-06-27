@@ -22,7 +22,8 @@ func NewConfig(logger zap.Logger) Config {
 func (c *Config) getEnvVar() {
 	port := os.Getenv("PORT")
 	if port == "" {
-		c.logger.Fatal("Could not read env var")
+		c.logger.Warn("could not read PORT env var, default to 8000")
+		port = "8000"
 	}
 
 	c.Port = port
