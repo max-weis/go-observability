@@ -18,12 +18,12 @@ func main() {
 
 	logger.Info("start server", zap.String("port", config.Port))
 
-	tracer, closer := config.NewTracer("localhost:5775", "observability-demo")
+	tracer, closer := config.NewTracer()
 	defer closer.Close()
 
 	// init domain logic
 	var hs hello.Service
-	hs = hello.NewService(*logger)
+	hs = hello.NewService(*logger, tracer)
 
 	// create http server
 	srv := server.New(hs, *logger, tracer)

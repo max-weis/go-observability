@@ -8,7 +8,7 @@ import (
 	"io"
 )
 
-func (c *Config) NewTracer(serviceName, host string) (opentracing.Tracer, io.Closer) {
+func (c *Config) NewTracer() (opentracing.Tracer, io.Closer) {
 	cfg, err := config.FromEnv()
 	if err != nil {
 		c.logger.Warn("could not get jaeger env vars", zap.Error(err))

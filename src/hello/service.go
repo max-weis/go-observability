@@ -2,6 +2,7 @@ package hello
 
 import (
 	"errors"
+	"github.com/opentracing/opentracing-go"
 	"go.uber.org/zap"
 )
 
@@ -17,24 +18,32 @@ type Service interface {
 // empty implementation
 type service struct {
 	logger zap.Logger
+	tracer opentracing.Tracer
 }
 
-func NewService(logger zap.Logger) *service {
-	return &service{logger: logger}
+func NewService(logger zap.Logger, tracer opentracing.Tracer) *service {
+	return &service{logger: logger, tracer: tracer}
 }
 
 func (s *service) SayHello() *Message {
 	s.logger.Info("say hello")
 
+	span := s.tracer.StartSpan("say_hello_span")
+	defer span.Finish()
+
 	return NewMessage("Hello!")
 }
 
 func (s *service) SayMessage(message string) (*Message, error) {
+	s.logger.Info("say message", zap.String("message", message))
+
+	span := s.tracer.StartSpan("say_message_span")
+	defer span.Finish()
+
 	if message == "" {
 		s.logger.Warn("message empty")
 		return nil, ErrEmptyMessage
 	}
-	s.logger.Info("say message", zap.String("message", message))
 
 	return NewMessage(message), nil
 }

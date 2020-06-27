@@ -3,26 +3,58 @@ version: '3.8'
 volumes:
   logs:
   prom_data:
+  graf_data:
 
 services:
-  go-observability:
+  observability-service:
     image: max-weis/go-observability
     build:
       context: ./src
+    environment:
+      PORT: 8000
+      JAEGER_SERVICE_NAME: go-observability
+      JAEGER_AGENT_HOST: jaeger
+      JAEGER_AGENT_PORT: 6831
     volumes:
       - logs:/app/log
     ports:
       - 8000:8000
 
-  #prometheus:
-  #  image: prom/prometheus:v2.1.0
-  #  volumes:
-  #    - ./prometheus/:/etc/prometheus/
-  #    - prom_data:/prometheus
-  #  command:
-  #    - '--config.file=/etc/prometheus/prometheus.yml'
-  #    - '--storage.tsdb.path=/prometheus'
-  #    - '--web.console.libraries=/usr/share/prometheus/console_libraries'
-  #    - '--web.console.templates=/usr/share/prometheus/consoles'
-  #  ports:
-  #    - 9090:9090
+  jaeger:
+    image: jaegertracing/all-in-one:1.18.1
+    ports:
+      - 16686:16686
+
+  prometheus:
+    image: prom/prometheus:v2.1.0
+    volumes:
+      - ./prometheus/:/etc/prometheus/
+      - prom_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+    ports:
+      - 9090:9090
+
+  loki:
+    image: grafana/loki:1.5.0
+    ports:
+      - 3100:3100
+
+  promtail:
+    image: grafana/promtail:1.5.0
+    command: -config.file=./promtail/promtail-config.yml
+    volumes:
+      - logs:/app/log
+
+  grafana:
+    image: grafana/grafana:7.0.4
+    depends_on:
+      - prometheus
+    ports:
+      - 3000:3000
+    volumes:
+      - graf_data:/var/lib/grafana
+      - ./grafana/provisioning/:/etc/grafana/provisioning/
