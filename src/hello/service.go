@@ -13,7 +13,7 @@ type Service interface {
 	SayMessage(message string) (*Message, error)
 }
 
-// empty implementation
+// empty implementation of Service interface
 type service struct {
 }
 
