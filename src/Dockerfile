@@ -14,8 +14,9 @@ COPY . .
 RUN CGO_ENABLED=0 GOOS=linux go build -o main
 
 #resulting app
-FROM scratch as final
+FROM alpine as final
 COPY --from=build go/app/main /app/
 WORKDIR /app
+RUN mkdir log
 
 ENTRYPOINT [ "./main" ]

@@ -1,0 +1,7 @@
+.git
+log
+docker-compose.yml
+Dockerfile
+README.md
+monitoring.*
+monitoring
