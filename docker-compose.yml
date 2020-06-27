@@ -45,9 +45,10 @@ services:
 
   promtail:
     image: grafana/promtail:1.5.0
-    command: -config.file=./promtail/promtail-config.yml
+    command: -config.file=/opt/promtail-config.yml
     volumes:
       - logs:/app/log
+      - ./promtail/promtail-config.yml:/opt/promtail-config.yml
 
   grafana:
     image: grafana/grafana:7.0.4
