@@ -17,7 +17,8 @@ func (c *Config) NewTracer() (opentracing.Tracer, io.Closer) {
 		config.Logger(jaeger.StdLogger),
 	)
 	if err != nil {
-		c.logger.Fatal("could not init tracer", zap.Error(err))
+		c.logger.Warn("could not init tracer", zap.Error(err))
+		return nil, nil
 	}
 
 	return tracer, closer

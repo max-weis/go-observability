@@ -2,8 +2,6 @@ package hello
 
 import (
 	"errors"
-	"github.com/opentracing/opentracing-go"
-	"go.uber.org/zap"
 )
 
 // ErrEmptyMessage is returned when the message is empty.
@@ -17,35 +15,27 @@ type Service interface {
 
 // empty implementation
 type service struct {
-	logger zap.Logger
-	tracer opentracing.Tracer
 }
 
-func NewService(logger zap.Logger, tracer opentracing.Tracer) *service {
-	return &service{logger: logger, tracer: tracer}
+func NewService() *service {
+	return &service{}
 }
 
+// domain logic
 func (s *service) SayHello() *Message {
-	s.logger.Info("say hello")
+	message := NewMessage("Hello!")
 
-	span := s.tracer.StartSpan("say_hello_span")
-	defer span.Finish()
-
-	return NewMessage("Hello!")
+	return message
 }
 
-func (s *service) SayMessage(message string) (*Message, error) {
-	s.logger.Info("say message", zap.String("message", message))
-
-	span := s.tracer.StartSpan("say_message_span")
-	defer span.Finish()
-
-	if message == "" {
-		s.logger.Warn("message empty")
+// domain logic
+func (s *service) SayMessage(msg string) (*Message, error) {
+	if msg == "" {
 		return nil, ErrEmptyMessage
 	}
 
-	return NewMessage(message), nil
+	message := NewMessage(msg)
+	return message, nil
 }
 
 type Message struct {

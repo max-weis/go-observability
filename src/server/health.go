@@ -4,21 +4,10 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/go-chi/chi"
-	"github.com/prometheus/client_golang/prometheus"
-	"github.com/prometheus/client_golang/prometheus/promauto"
-	"go.uber.org/zap"
 	"net/http"
 )
 
-var (
-	healthCounter = promauto.NewCounter(prometheus.CounterOpts{
-		Name: "health_total",
-		Help: "The total number of health checks",
-	})
-)
-
 type healthHandler struct {
-	logger zap.Logger
 }
 
 func (h *healthHandler) router() chi.Router {
@@ -28,8 +17,6 @@ func (h *healthHandler) router() chi.Router {
 }
 
 func (h *healthHandler) health(w http.ResponseWriter, r *http.Request) {
-	healthCounter.Inc()
-	h.logger.Info("up")
 	ctx := context.Background()
 
 	message := struct {
