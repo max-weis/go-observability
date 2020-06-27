@@ -22,6 +22,7 @@ type Server struct {
 
 func New(hs hello.Service, logger zap.Logger, tracer opentracing.Tracer) *Server {
 	s := &Server{Hello: hs, logger: logger}
+	health := healthHandler{logger: logger}
 
 	r := chi.NewRouter()
 	r.Use(accessControl)
@@ -38,6 +39,8 @@ func New(hs hello.Service, logger zap.Logger, tracer opentracing.Tracer) *Server
 		h := helloHandler{s.Hello, logger}
 		r.Mount("/v1", h.router())
 	})
+
+	r.Mount("/health", health.router())
 
 	r.Method("GET", "/metrics", promhttp.Handler())
 	s.router = r
