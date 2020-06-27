@@ -4,6 +4,8 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/go-chi/chi"
+	"github.com/go-chi/httptracer"
+	"github.com/opentracing/opentracing-go"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"go.uber.org/zap"
 	"monitoring/hello"
@@ -15,13 +17,22 @@ type Server struct {
 
 	logger zap.Logger
 	router chi.Router
+	tracer opentracing.Tracer
 }
 
-func New(hs hello.Service, logger zap.Logger) *Server {
+func New(hs hello.Service, logger zap.Logger, tracer opentracing.Tracer) *Server {
 	s := &Server{Hello: hs, logger: logger}
 
 	r := chi.NewRouter()
 	r.Use(accessControl)
+	r.Use(httptracer.Tracer(tracer, httptracer.Config{
+		ServiceName:    "observability-demo",
+		ServiceVersion: "0.0.0",
+		SampleRate:     1,
+		SkipFunc: func(r *http.Request) bool {
+			return r.URL.Path == "/health"
+		},
+	}))
 
 	r.Route("/hello", func(r chi.Router) {
 		h := helloHandler{s.Hello, logger}
