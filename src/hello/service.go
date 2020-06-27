@@ -24,7 +24,7 @@ func NewService(logger zap.Logger) *service {
 }
 
 func (s *service) SayHello() *Message {
-	s.logger.Debug("say hello")
+	s.logger.Info("say hello")
 
 	return NewMessage("Hello!")
 }
@@ -34,7 +34,7 @@ func (s *service) SayMessage(message string) (*Message, error) {
 		s.logger.Warn("message empty")
 		return nil, ErrEmptyMessage
 	}
-	s.logger.Debug("say message", zap.String("msg", message))
+	s.logger.Info("say message", zap.String("message", message))
 
 	return NewMessage(message), nil
 }
