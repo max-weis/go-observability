@@ -25,7 +25,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Get dependencies
-        run: go mod download
+        run: go mod download monitoring
 
       - name: Build
         run: make build
