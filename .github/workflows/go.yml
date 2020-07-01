@@ -35,3 +35,9 @@ jobs:
 
       - name: Integration Test
         run: make it
+
+      - name: Docker build
+        run: make docker-build
+
+      - name: Docker push
+        run: make docker-push
