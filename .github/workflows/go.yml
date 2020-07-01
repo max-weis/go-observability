@@ -28,7 +28,10 @@ jobs:
         run: go mod download
 
       - name: Build
-        run: go build main.go
+        run: make build
 
       - name: Unit Test
-        run: go test ./... -tags=unit
+        run: make ut
+
+      - name: Integration Test
+        run: make it
